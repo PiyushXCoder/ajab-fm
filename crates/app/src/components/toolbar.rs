@@ -12,7 +12,6 @@ pub(crate) fn Toolbar(path: Signal<String>) -> Element {
                 onclick: move |_| {
                     let mut buf = PathBuf::from(path());
                     buf.push("..");
-                println!("Going up to {:?}", buf.canonicalize());
                     if let Ok(realpath) = buf.canonicalize() {
                         path.set(realpath.to_string_lossy().to_string());
                     }
