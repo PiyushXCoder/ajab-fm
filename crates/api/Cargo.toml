@@ -8,3 +8,5 @@ dioxus = { workspace = true }
 serde = { workspace = true }
 chrono = { workspace = true }
 infer = { workspace = true }
+thiserror = { workspace = true }
+dirs = { workspace = true }

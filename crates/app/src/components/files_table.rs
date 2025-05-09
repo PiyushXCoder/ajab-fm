@@ -7,7 +7,7 @@ pub(crate) fn FilesTable(path: Signal<String>) -> Element {
     let selected = use_signal(|| None::<usize>);
     let files = use_resource(move || async move {
         let path = path();
-        api::list_files(path).await
+        api::actions::list_files(path).await
     });
 
     return rsx! {
@@ -55,6 +55,9 @@ fn FileRow(
         tr {
             class: if is_selected { "highlight" } else { "" },
             onclick: move |_| selected.set(Some(index)),
+            oncontextmenu: move |_| {
+                println!("Right-clicked");
+            },
             ondoubleclick: move |_| {
                 if &file_type == "directory" {
                     let mut buf = PathBuf::from(path());
