@@ -17,3 +17,11 @@ pub async fn list_files(path: String) -> Result<Vec<FileInfo>, ServerFnError> {
     Ok(files)
 }
 
+#[server]
+pub async fn get_home_dir() -> Result<String, ServerFnError> {
+    let home_dir = dirs::home_dir()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .to_string();
+    Ok(home_dir)
+}
