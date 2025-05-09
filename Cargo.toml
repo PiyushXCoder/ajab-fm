@@ -7,7 +7,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.6.0", features = ["router", "fullstack"] }
+dioxus = { workspace = true }
+app = { workspace = true }
 
 [features]
 default = ["desktop"]
@@ -17,3 +18,27 @@ web = ["dioxus/web"]
 desktop = ["dioxus/desktop"]
 # The feature that are only required for the mobile = ["dioxus/mobile"] build target should be optional and only enabled in the mobile = ["dioxus/mobile"] feature
 mobile = ["dioxus/mobile"]
+
+[profile]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
+
+
+[workspace]
+members = ["./crates/*", "."]
+
+[workspace.dependencies]
+dioxus = { version = "0.6.0", features = ["router", "fullstack"] }
+serde = "1.0.219"
+chrono = "0.4.26"
+infer = "0.19"
+app = { path = "crates/app" }
+api = { path = "crates/api" }

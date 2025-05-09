@@ -3,7 +3,7 @@
 [web.app]
 
 # HTML title tag content
-title = "ajab-fm"
+title = "Ajab File Manager"
 
 # include `assets` in web platform
 [web.resource]
