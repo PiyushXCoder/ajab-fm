@@ -27,4 +27,4 @@ Before starting the project I had multiple options. After experimenting little w
 ## Screenshots
 
 ![IMG1](screenshot/Screenshot_2025-05-09_23-26-29.jpg)
-![IMG2](screenshot/Screenshot_2025-05-09_23-26-58.jpg)
+![IMG2](screenshot/Screenshot_2025-05-09_23-31-43.jpg)
