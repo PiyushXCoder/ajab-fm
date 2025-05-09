@@ -1,4 +1,5 @@
 pub(crate) mod components;
+pub(crate) mod uri;
 mod views;
 
 use dioxus::prelude::*;

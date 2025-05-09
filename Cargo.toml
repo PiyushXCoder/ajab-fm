@@ -42,5 +42,7 @@ chrono = "0.4"
 infer = "0.19"
 thiserror = "2.0"
 dirs = "6.0"
+walkdir = "2.5"
+rust_search = "2.0.0"
 app = { path = "crates/app" }
 api = { path = "crates/api" }

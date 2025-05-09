@@ -2,12 +2,17 @@ use std::path::PathBuf;
 
 use dioxus::prelude::*;
 
+use crate::uri::URI;
+
 #[component]
-pub(crate) fn FilesTable(path: Signal<String>) -> Element {
+pub(crate) fn FilesTable(uri: Signal<URI>) -> Element {
     let selected = use_signal(|| None::<usize>);
     let files = use_resource(move || async move {
-        let path = path();
-        api::actions::list_files(path).await
+        let uri = uri();
+        match uri {
+            URI::Path(path) => api::actions::list_files(path).await,
+            URI::Search(path, query) => api::actions::search_file(path, query).await,
+        }
     });
 
     return rsx! {
@@ -31,7 +36,8 @@ pub(crate) fn FilesTable(path: Signal<String>) -> Element {
                             size: file.size.clone(),
                             file_type: file.file_type.clone(),
                             modified: file.modified.clone(),
-                            path: path
+                            path: file.path.clone(),
+                            uri,
                         }
                     }
                 }
@@ -48,7 +54,8 @@ fn FileRow(
     size: String,
     file_type: String,
     modified: String,
-    path: Signal<String>,
+    path: String,
+    uri: Signal<URI>,
 ) -> Element {
     let is_selected = selected() == Some(index);
     return rsx! {
@@ -60,9 +67,9 @@ fn FileRow(
             },
             ondoubleclick: move |_| {
                 if &file_type == "directory" {
-                    let mut buf = PathBuf::from(path());
+                    let mut buf = PathBuf::from(uri().path());
                     buf.push(&name);
-                    path.set(buf.to_string_lossy().to_string());
+                    uri.set(URI::Path(path.clone()));
                 }
             },
             td { "{name}" }

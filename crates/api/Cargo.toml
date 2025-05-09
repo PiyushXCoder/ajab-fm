@@ -10,3 +10,4 @@ chrono = { workspace = true }
 infer = { workspace = true }
 thiserror = { workspace = true }
 dirs = { workspace = true }
+rust_search = { workspace = true }
