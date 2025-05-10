@@ -1,9 +1,19 @@
+#![allow(unused_imports)]
 use crate::response_models::FileInfo;
 #[allow(unused_imports)]
 use chrono::{DateTime, Local};
 use dioxus::prelude::*;
 #[allow(unused_imports)]
 use rust_search::SearchBuilder;
+#[allow(unused_imports)]
+use std::path::PathBuf;
+
+#[server]
+pub async fn canonicalize(path: String) -> Result<String, ServerFnError> {
+    let buf = PathBuf::from(path);
+    let result = buf.canonicalize()?;
+    Ok(result.to_string_lossy().to_string())
+}
 
 #[server]
 pub async fn get_home_dir() -> Result<String, ServerFnError> {

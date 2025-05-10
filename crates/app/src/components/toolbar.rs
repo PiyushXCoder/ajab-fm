@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use dioxus::prelude::*;
+use dioxus::{logger::tracing, prelude::*};
 
 use crate::global_state::{Uri, UriMomento};
 
@@ -36,13 +36,14 @@ pub(crate) fn Toolbar(uri: Signal<UriMomento>) -> Element {
             }
             button {
                 class: "toolbar-button",
-                onclick: move |_| {
+                onclick: move |_| async move {
                     let current_uri = uri.read().get_current_uri().unwrap_or_default();
                     if let Uri::Path(path) = current_uri {
                         let mut buf = PathBuf::from(path);
                         buf.push("..");
-                        if let Ok(realpath) = buf.canonicalize() {
-                            uri.write().add_uri(Uri::Path(realpath.to_string_lossy().to_string()));
+                        let canonical_path = api::actions::canonicalize(buf.to_string_lossy().to_string()).await;
+                        if let Ok(realpath) = canonical_path {
+                            uri.write().add_uri(Uri::Path(realpath));
                             uri.write().set_current_to_latest();
                         }
                     }
