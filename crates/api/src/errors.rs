@@ -1,5 +1,5 @@
+// This if for Custom Errors
+
+#[allow(unused)]
 #[derive(thiserror::Error, Debug)]
-pub(crate) enum MyError {
-    #[error("Failed to read metadata")]
-    IoError(#[from] std::io::Error),
-}
+pub(crate) enum MyError {}
