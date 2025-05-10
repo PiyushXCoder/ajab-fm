@@ -13,24 +13,14 @@ pub(crate) fn Toolbar(uri: Signal<UriMomento>) -> Element {
             button {
                 class: "toolbar-button",
                 onclick: move |_| {
-                    let current_uri_index = uri.read().current_uri;
-                    if let Some(index) = current_uri_index {
-                        if index > 0 {
-                            uri.write().set_current_uri(index - 1);
-                        }
-                    }
+                    uri.write().set_previous_uri();
                 },
                 "Back"
             }
             button {
                 class: "toolbar-button",
                 onclick: move |_| {
-                    let current_uri_index = uri.read().current_uri;
-                    if let Some(index) = current_uri_index {
-                        if index < uri.read().uris.len() - 1 {
-                            uri.write().set_current_uri(index + 1);
-                        }
-                    }
+                    uri.write().set_next_uri();
                 },
                 "Front"
             }

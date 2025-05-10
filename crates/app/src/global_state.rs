@@ -38,6 +38,22 @@ impl UriMomento {
             .and_then(|index| self.uris.get(index))
             .cloned()
     }
+
+    pub(crate) fn set_previous_uri(&mut self) {
+        if let Some(current_index) = self.current_uri {
+            if current_index > 0 {
+                self.current_uri = Some(current_index - 1);
+            }
+        }
+    }
+
+    pub(crate) fn set_next_uri(&mut self) {
+        if let Some(current_index) = self.current_uri {
+            if current_index < self.uris.len() - 1 {
+                self.current_uri = Some(current_index + 1);
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
