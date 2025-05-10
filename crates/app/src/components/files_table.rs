@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use api::response_models::FileInfo;
+use dioxus::logger::tracing;
 use dioxus::prelude::*;
 use futures::StreamExt;
 

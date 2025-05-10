@@ -78,7 +78,6 @@ dependencies = [
  "api",
  "dioxus",
  "futures",
- "tracing",
 ]
 
 [[package]]
