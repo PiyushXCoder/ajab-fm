@@ -8,7 +8,7 @@ A toy file manager. It includes very basic features.
 
   > Install all dependencies mentioned in the Dioxus documentation.
 
-- Once done, clone the project and go to the root directory of the project. The following command will start the server:
+- Once done, clone the project and go to the root directory of the project. The following command will start the app:
 
 ```bash
 dx serve
