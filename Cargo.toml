@@ -44,5 +44,7 @@ thiserror = "2.0"
 dirs = "6.0"
 walkdir = "2.5"
 rust_search = "2.0.0"
+futures = "0.3"
+tokio = { version = "1.45", features = ["full"] }
 app = { path = "crates/app" }
 api = { path = "crates/api" }

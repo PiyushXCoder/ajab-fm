@@ -1,6 +1,8 @@
 use std::path::PathBuf;
 
+use api::response_models::FileInfo;
 use dioxus::prelude::*;
+use futures::StreamExt;
 
 use crate::global_state::Uri;
 use crate::global_state::UriMomento;
@@ -8,12 +10,27 @@ use crate::global_state::UriMomento;
 #[component]
 pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
     let selected = use_signal(|| None::<usize>);
-    let files = use_resource(move || async move {
+    let mut files = use_signal(Vec::<FileInfo>::new);
+    let mut is_loading = use_signal(|| false);
+
+    let _ = use_resource(move || async move {
         let current_uri = uri.read().get_current_uri().unwrap_or_default();
-        match current_uri {
-            Uri::Path(path) => api::actions::list_files(path).await,
-            Uri::Search(path, query) => api::actions::search_file(path, query).await,
+        let stream = match current_uri {
+            Uri::Path(path) => api::actions::list_files_streamed(path).await,
+            Uri::Search(path, query) => api::actions::search_file_streamed(path, query).await,
         }
+        .unwrap();
+        files.set(vec![]);
+        is_loading.set(true);
+        spawn(async move {
+            let mut stream = stream.into_inner();
+            while let Some(file) = stream.next().await {
+                if let Ok(file) = file {
+                    files.write().push(file);
+                }
+            }
+            is_loading.set(false);
+        });
     });
 
     return rsx! {
@@ -27,22 +44,23 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
                 }
             }
             tbody {
-
-                if let Some(Ok(files)) = files.cloned() {
-                    for file in files.iter() {
-                        FileRow {
-                            selected: selected,
-                            index: 0,
-                            name: file.name.clone(),
-                            size: file.size.clone(),
-                            file_type: file.file_type.clone(),
-                            modified: file.modified.clone(),
-                            path: file.path.clone(),
-                            uri,
-                        }
+                for file in files.iter() {
+                    FileRow {
+                        selected: selected,
+                        index: 0,
+                        name: file.name.clone(),
+                        size: file.size.clone(),
+                        file_type: file.file_type.clone(),
+                        modified: file.modified.clone(),
+                        path: file.path.clone(),
+                        uri,
                     }
                 }
             }
+        }
+
+        if is_loading() {
+            div { "Loading..." }
         }
     };
 }

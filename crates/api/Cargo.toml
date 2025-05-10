@@ -11,3 +11,5 @@ infer = { workspace = true }
 thiserror = { workspace = true }
 dirs = { workspace = true }
 rust_search = { workspace = true }
+tokio = { workspace = true }
+futures = { workspace = true }
