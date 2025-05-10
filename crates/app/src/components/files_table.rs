@@ -87,6 +87,7 @@ fn FileRow(
     uri: Signal<UriMomento>,
 ) -> Element {
     let is_selected = selected() == Some(index);
+    let nav = use_navigator();
     return rsx! {
         tr {
             class: if is_selected { "highlight" } else { "" },
@@ -101,6 +102,8 @@ fn FileRow(
                     buf.push(&name);
                     uri.write().add_uri(Uri::Path(path.clone()));
                     uri.write().set_current_to_latest();
+                } else if &file_type == "plain/txt" {
+                    nav.push(crate::Route::TextFileViewer{ path: path.clone() });
                 }
             },
             td {

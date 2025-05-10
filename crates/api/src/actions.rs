@@ -5,6 +5,7 @@ use chrono::{DateTime, Local};
 use dioxus::prelude::*;
 #[allow(unused_imports)]
 use rust_search::SearchBuilder;
+use std::io::Read;
 #[allow(unused_imports)]
 use std::path::PathBuf;
 
@@ -58,4 +59,13 @@ pub async fn search_file_streamed(
     }
 
     Ok(file_info_list)
+}
+
+#[server]
+pub async fn read_text_file(path: String) -> Result<String, ServerFnError> {
+    let file = std::fs::File::open(&path)?;
+    let mut reader = std::io::BufReader::new(file);
+    let mut contents = String::new();
+    reader.read_to_string(&mut contents)?;
+    Ok(contents)
 }
