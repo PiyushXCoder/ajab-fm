@@ -89,3 +89,9 @@ tbody td {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+.path {
+  padding: 8px;
+  font-size: 18px;
+  color: #555;
+}

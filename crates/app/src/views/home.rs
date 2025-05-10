@@ -16,7 +16,10 @@ pub fn Home() -> Element {
     });
     rsx! {
         div {
-            div { {uri.read().get_current_uri().unwrap_or_default().to_string()} }
+            div {
+                class: "path",
+                {uri.read().get_current_uri().unwrap_or_default().to_string()}
+            }
             Toolbar {uri}
             FilesTable {uri}
         }
