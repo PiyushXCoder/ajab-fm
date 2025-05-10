@@ -103,7 +103,10 @@ fn FileRow(
                     uri.write().set_current_to_latest();
                 }
             },
-            td { "{name}" }
+            td {
+                class: "file-name",
+                "{name}"
+            }
             td { "{size}" }
             td { "{file_type}" }
             td { "{modified}" }

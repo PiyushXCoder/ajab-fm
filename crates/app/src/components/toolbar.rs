@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use dioxus::{logger::tracing, prelude::*};
+use dioxus::prelude::*;
 
 use crate::global_state::{Uri, UriMomento};
 
