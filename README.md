@@ -23,7 +23,7 @@ Before starting the project, I had multiple options. After experimenting a littl
 - **egui:** This is also good but more suited for making games. Creating layouts is less intuitive, and the GUI is focused on `immediate mode`, which has its own issues. It can affect threads if not done correctly.
 - **Yew:** This is a great option. There aren't any issue that bothered me, and integrations are also good. But I just didn’t try it this time — I need more time to explore.
 - **Tauri:** Tauri is fast and well-organized, but it has more moving parts. I will give it a try again. We can use Dioxus and Yew in Tauri.
-- **Dioxus:** It is simple with a very low learning curve. It's fast and well-maintained. While it looks like a good option, it has its own problems — especially one that delayed my deadline. The `StreamingJson` response is broken on the web, which breaks this app when run in a browser. Not sure how to fix it. There must be some workaround.
+- **Dioxus:** It is simple with a very low learning curve. It's fast and well-maintained. While it looks like a good option, it has its own problems. The `StreamingJson` response is broken on the web. Not sure how to fix it. There must be some workaround.
 
 ## Screenshots
 
