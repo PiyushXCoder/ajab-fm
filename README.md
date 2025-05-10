@@ -25,6 +25,15 @@ Before starting the project, I had multiple options. After experimenting a littl
 - **Tauri:** Tauri is fast and well-organized, but it has more moving parts. I will give it a try again. We can use Dioxus and Yew in Tauri.
 - **Dioxus:** It is simple with a very low learning curve. It's fast and well-maintained. While it looks like a good option, it has its own problems. The `StreamingJson` response is broken on the web. Not sure how to fix it. There must be some workaround.
 
+## Features
+
+- [x] List files and folder
+- [x] Double click to open folder 
+- [x] Keep history of navigation
+- [x] Forward, backward and up dir button
+- [x] Search
+
+
 ## Screenshots
 
 ![IMG1](screenshot/Screenshot_2025-05-10_22-30-16.jpg)
