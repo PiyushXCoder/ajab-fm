@@ -18,6 +18,7 @@ impl UriMomento {
     }
 
     pub(crate) fn add_uri(&mut self, uri: Uri) {
+        self.clean_after_current_uri();
         self.uris.push(uri);
     }
 
@@ -51,6 +52,14 @@ impl UriMomento {
         if let Some(current_index) = self.current_uri {
             if current_index < self.uris.len() - 1 {
                 self.current_uri = Some(current_index + 1);
+            }
+        }
+    }
+
+    pub(crate) fn clean_after_current_uri(&mut self) {
+        if let Some(current_index) = self.current_uri {
+            if current_index < self.uris.len() - 1 {
+                self.uris.truncate(current_index + 1);
             }
         }
     }
