@@ -2,10 +2,10 @@ use std::path::PathBuf;
 
 use dioxus::prelude::*;
 
-use crate::uri::URI;
+use crate::global_state::{Uri, UriMomento};
 
 #[component]
-pub(crate) fn Toolbar(uri: Signal<URI>) -> Element {
+pub(crate) fn Toolbar(uri: Signal<UriMomento>) -> Element {
     let mut search_query = use_signal(|| "".to_string());
     rsx! {
         div {
@@ -13,23 +13,51 @@ pub(crate) fn Toolbar(uri: Signal<URI>) -> Element {
             button {
                 class: "toolbar-button",
                 onclick: move |_| {
-                    if let URI::Path(path) = uri() {
-                        let mut buf = PathBuf::from(path);
-                        buf.push("..");
-                        if let Ok(realpath) = buf.canonicalize() {
-                            uri.set(URI::Path(realpath.to_string_lossy().to_string()));
+                    let current_uri_index = uri.read().current_uri;
+                    if let Some(index) = current_uri_index {
+                        if index > 0 {
+                            uri.write().set_current_uri(index - 1);
                         }
                     }
                 },
                 "Back"
             }
+            button {
+                class: "toolbar-button",
+                onclick: move |_| {
+                    let current_uri_index = uri.read().current_uri;
+                    if let Some(index) = current_uri_index {
+                        if index < uri.read().uris.len() - 1 {
+                            uri.write().set_current_uri(index + 1);
+                        }
+                    }
+                },
+                "Front"
+            }
+            button {
+                class: "toolbar-button",
+                onclick: move |_| {
+                    let current_uri = uri.read().get_current_uri().unwrap_or_default();
+                    if let Uri::Path(path) = current_uri {
+                        let mut buf = PathBuf::from(path);
+                        buf.push("..");
+                        if let Ok(realpath) = buf.canonicalize() {
+                            uri.write().add_uri(Uri::Path(realpath.to_string_lossy().to_string()));
+                            uri.write().set_current_to_latest();
+                        }
+                    }
+                },
+                "Up"
+            }
             input {
                 class: "toolbar-input",
                 placeholder: "Search...",
-                value: if let URI::Search(_, value) = uri() {value} else {""},
+                value: if let Uri::Search(_, value) = uri.read().get_current_uri().unwrap_or_default() {value} else {""},
                 onkeydown: move |e| {
                     if e.key() == Key::Enter {
-                        uri.set(URI::Search(uri.cloned().path(), search_query.cloned()));
+                        let current_uri = uri.read().get_current_uri().unwrap_or_default();
+                        uri.write().add_uri(Uri::Search(current_uri.path(), search_query.cloned()));
+                        uri.write().set_current_to_latest();
                     }
                 },
                 oninput: move |e| {

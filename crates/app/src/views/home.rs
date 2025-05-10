@@ -1,28 +1,24 @@
 use crate::components::files_table::FilesTable;
 use crate::components::toolbar::Toolbar;
-use crate::uri::URI;
+use crate::global_state::{GLOBAL_STATE, Uri};
 use dioxus::prelude::*;
 
 /// The Home page component that will be rendered when the current route is `[Route::Home]`
 #[component]
 pub fn Home() -> Element {
     let home_dir = use_resource(move || async move { api::actions::get_home_dir().await });
-    let mut uri = use_signal(move || match home_dir.cloned() {
-        Some(Ok(path)) => URI::Path(path),
-        _ => URI::Path("".to_string()),
-    });
+    let mut uri = GLOBAL_STATE.signal();
 
     use_effect(move || {
         if let Some(Ok(path)) = home_dir.cloned() {
-            uri.set(URI::Path(path));
+            uri.write().add_uri(Uri::Path(path.clone()));
+            uri.write().set_current_to_latest();
         }
     });
 
-    println!("[Home] uri: {:?}", uri());
-
     rsx! {
         div {
-            div { {uri.to_string() } }
+            div { {uri.read().get_current_uri().unwrap_or_default().to_string()} }
             Toolbar {uri}
             FilesTable {uri}
         }

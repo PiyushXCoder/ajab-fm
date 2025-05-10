@@ -2,16 +2,17 @@ use std::path::PathBuf;
 
 use dioxus::prelude::*;
 
-use crate::uri::URI;
+use crate::global_state::Uri;
+use crate::global_state::UriMomento;
 
 #[component]
-pub(crate) fn FilesTable(uri: Signal<URI>) -> Element {
+pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
     let selected = use_signal(|| None::<usize>);
     let files = use_resource(move || async move {
-        let uri = uri();
-        match uri {
-            URI::Path(path) => api::actions::list_files(path).await,
-            URI::Search(path, query) => api::actions::search_file(path, query).await,
+        let current_uri = uri.read().get_current_uri().unwrap_or_default();
+        match current_uri {
+            Uri::Path(path) => api::actions::list_files(path).await,
+            Uri::Search(path, query) => api::actions::search_file(path, query).await,
         }
     });
 
@@ -55,7 +56,7 @@ fn FileRow(
     file_type: String,
     modified: String,
     path: String,
-    uri: Signal<URI>,
+    uri: Signal<UriMomento>,
 ) -> Element {
     let is_selected = selected() == Some(index);
     return rsx! {
@@ -67,9 +68,11 @@ fn FileRow(
             },
             ondoubleclick: move |_| {
                 if &file_type == "directory" {
-                    let mut buf = PathBuf::from(uri().path());
+                    let current_uri = uri.read().get_current_uri().unwrap_or_default();
+                    let mut buf = PathBuf::from(current_uri.path());
                     buf.push(&name);
-                    uri.set(URI::Path(path.clone()));
+                    uri.write().add_uri(Uri::Path(path.clone()));
+                    uri.write().set_current_to_latest();
                 }
             },
             td { "{name}" }
