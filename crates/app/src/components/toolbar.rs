@@ -50,6 +50,17 @@ pub(crate) fn Toolbar(uri: Signal<UriMomento>) -> Element {
                 },
                 "Up"
             }
+            button {
+                class: "toolbar-button",
+                onclick: move |_| async move {
+                    let homr_dir = api::actions::get_home_dir().await;
+                    if let Ok(realpath) = homr_dir {
+                        uri.write().add_uri(Uri::Path(realpath));
+                        uri.write().set_current_to_latest();
+                    }
+                },
+                "Home"
+            }
             input {
                 class: "toolbar-input",
                 placeholder: "Search...",
