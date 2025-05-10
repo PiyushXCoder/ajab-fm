@@ -40,6 +40,8 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
             while let Some(file) = stream.next().await {
                 if let Ok(file) = file {
                     files.write().push(file);
+                } else {
+                    tracing::error!("Error receiving file: {:?}", file);
                 }
             }
             is_loading.set(false);
