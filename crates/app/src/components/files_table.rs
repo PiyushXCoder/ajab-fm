@@ -15,6 +15,8 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
 
     let _ = use_resource(move || async move {
         let current_uri = uri.read().get_current_uri().unwrap_or_default();
+        files.set(vec![]);
+        is_loading.set(true);
         let file_info_list = match current_uri {
             Uri::Path(path) => {
                 if path.is_empty() {
@@ -33,8 +35,6 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
             }
         };
 
-        files.set(vec![]);
-        is_loading.set(true);
         spawn(async move {
             for file in file_info_list {
                 files.write().push(file);
