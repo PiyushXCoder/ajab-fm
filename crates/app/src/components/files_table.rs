@@ -16,7 +16,7 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
 
     let _ = use_resource(move || async move {
         let current_uri = uri.read().get_current_uri().unwrap_or_default();
-        let stream = match current_uri {
+        let file_info_list = match current_uri {
             Uri::Path(path) => {
                 if path.is_empty() {
                     return;
@@ -26,10 +26,10 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
             Uri::Search(path, query) => api::actions::search_file_streamed(path, query).await,
         };
 
-        let stream = match stream {
-            Ok(stream) => stream,
+        let file_info_list = match file_info_list {
+            Ok(v) => v,
             Err(e) => {
-                println!("Error: {}", e);
+                tracing::error!("Error: {}", e);
                 return;
             }
         };
@@ -37,13 +37,8 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
         files.set(vec![]);
         is_loading.set(true);
         spawn(async move {
-            let mut stream = stream.into_inner();
-            while let Some(file) = stream.next().await {
-                if let Ok(file) = file {
-                    files.write().push(file);
-                } else {
-                    tracing::error!("Error receiving file: {:?}", file);
-                }
+            for file in file_info_list {
+                files.write().push(file);
             }
             is_loading.set(false);
         });

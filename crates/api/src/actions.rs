@@ -1,7 +1,10 @@
 use crate::response_models::FileInfo;
 #[allow(unused_imports)]
 use chrono::{DateTime, Local};
-use dioxus::prelude::*;
+use dioxus::prelude::{
+    server_fn::codec::{ByteStream, Streaming},
+    *,
+};
 #[allow(unused_imports)]
 use rust_search::SearchBuilder;
 use server_fn::codec::{JsonStream, StreamingJson};
@@ -15,59 +18,38 @@ pub async fn get_home_dir() -> Result<String, ServerFnError> {
     Ok(home_dir)
 }
 
-#[server(output = StreamingJson)]
-pub async fn list_files_streamed(path: String) -> Result<JsonStream<FileInfo>, ServerFnError> {
-    let (tx, rx) = futures::channel::mpsc::unbounded::<Result<FileInfo, ServerFnError>>();
-    tokio::spawn(async move {
-        let read_dir = match std::fs::read_dir(&path) {
-            Ok(rd) => rd,
-            Err(e) => {
-                let _ = tx.unbounded_send(Err(ServerFnError::from(e)));
-                return;
-            }
-        };
+#[server]
+pub async fn list_files_streamed(path: String) -> Result<Vec<FileInfo>, ServerFnError> {
+    let read_dir = std::fs::read_dir(&path)?;
+    let mut file_info_list = Vec::new();
 
-        for entry in read_dir {
-            let entry = match entry {
-                Ok(e) => e,
-                Err(e) => {
-                    let _ = tx.unbounded_send(Err(ServerFnError::from(e)));
-                    continue;
-                }
-            };
+    for entry in read_dir {
+        let entry = entry?;
+        let result = FileInfo::from_dir_entry(entry)?;
+        file_info_list.push(result);
+    }
 
-            let result = FileInfo::from_dir_entry(entry);
-            if tx.unbounded_send(result).is_err() {
-                break;
-            }
-        }
-    });
-
-    Ok(JsonStream::new(rx))
+    Ok(file_info_list)
 }
 
-#[server(output = StreamingJson)]
+#[server]
 pub async fn search_file_streamed(
     path: String,
     filename: String,
-) -> Result<JsonStream<FileInfo>, ServerFnError> {
-    let (tx, rx) = futures::channel::mpsc::unbounded::<Result<FileInfo, ServerFnError>>();
-    tokio::spawn(async move {
-        let search = SearchBuilder::default()
-            .location(&path)
-            .search_input(filename)
-            .limit(100) // results to return
-            .strict()
-            .hidden()
-            .build();
+) -> Result<Vec<FileInfo>, ServerFnError> {
+    let mut file_info_list = Vec::new();
+    let search = SearchBuilder::default()
+        .location(&path)
+        .search_input(filename)
+        .limit(100) // results to return
+        .strict()
+        .hidden()
+        .build();
 
-        for entry in search {
-            let result = FileInfo::from_path(entry);
-            if tx.unbounded_send(result).is_err() {
-                break;
-            }
-        }
-    });
+    for entry in search {
+        let result = FileInfo::from_path(entry)?;
+        file_info_list.push(result);
+    }
 
-    Ok(JsonStream::new(rx))
+    Ok(file_info_list)
 }
