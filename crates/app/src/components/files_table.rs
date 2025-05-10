@@ -16,10 +16,23 @@ pub(crate) fn FilesTable(uri: Signal<UriMomento>) -> Element {
     let _ = use_resource(move || async move {
         let current_uri = uri.read().get_current_uri().unwrap_or_default();
         let stream = match current_uri {
-            Uri::Path(path) => api::actions::list_files_streamed(path).await,
+            Uri::Path(path) => {
+                if path.is_empty() {
+                    return;
+                }
+                api::actions::list_files_streamed(path).await
+            }
             Uri::Search(path, query) => api::actions::search_file_streamed(path, query).await,
-        }
-        .unwrap();
+        };
+
+        let stream = match stream {
+            Ok(stream) => stream,
+            Err(e) => {
+                println!("Error: {}", e);
+                return;
+            }
+        };
+
         files.set(vec![]);
         is_loading.set(true);
         spawn(async move {

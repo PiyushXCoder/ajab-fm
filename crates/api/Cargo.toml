@@ -11,5 +11,9 @@ infer = { workspace = true }
 thiserror = { workspace = true }
 dirs = { workspace = true }
 rust_search = { workspace = true }
-tokio = { workspace = true }
+tokio = { workspace = true, optional = true }
 futures = { workspace = true }
+
+
+[features]
+server = ["dep:tokio"]

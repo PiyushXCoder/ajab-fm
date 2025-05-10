@@ -1,11 +1,10 @@
 use crate::response_models::FileInfo;
 #[allow(unused_imports)]
 use chrono::{DateTime, Local};
-use dioxus::prelude::{
-    server_fn::codec::{JsonStream, StreamingJson},
-    *,
-};
+use dioxus::prelude::*;
+#[allow(unused_imports)]
 use rust_search::SearchBuilder;
+use server_fn::codec::{JsonStream, StreamingJson};
 
 #[server]
 pub async fn get_home_dir() -> Result<String, ServerFnError> {
